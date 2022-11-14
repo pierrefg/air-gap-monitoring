@@ -1,0 +1,10 @@
+pandas
+numpy
+plotly
+matplotlib
+pytz
+nbformat
+notebook
+ipykernel
+scipy
+statsmodels

@@ -1,0 +1,54 @@
+{
+    "avg4": {
+        "csv_file": "avg4.csv",
+        "name": "AVG4",
+        "poles_ccw": [4, 13, 21, 30, 39, 47, 56, 64, 73, 82, 90, 99, 108, 116, 125, 133, 142, 151, 159, 168, 177, 185, 194, 202, 211, 220, 228, 237, 246, 254, 263, 271],
+        "encohe_stator": 58,
+        "rotor_diameter": 4639,
+        "attrs": {
+            "entrefer_am": {
+                "attr_name": "EFamont",
+                "top_tour": "TopRotorAM"
+            },
+            "entrefer_md": {
+                "attr_name": "EFmédian",
+                "top_tour": "TopRotorMD"
+            },
+            "entrefer_av": {
+                "attr_name": "EFaval",
+                "top_tour": "TopRotorAV"
+            },
+            "rotor_center": {
+                "Xattr_name": "X",
+                "Yattr_name": "Y",
+                "top_tour": "TopStator"
+            }
+        }        
+    },
+    "prg1": {
+        "csv_file": "prg1.csv",
+        "name": "PRG1",
+        "poles_ccw": [4, 13, 21, 30, 39, 47, 56, 64, 73, 82, 90, 99, 108, 116, 125, 133, 142, 151, 159, 168, 177, 185, 194, 202, 211, 220, 228, 237, 246, 254, 263, 271],
+        "encohe_stator": 55,
+        "rotor_diameter": 4639,
+        "attrs": {
+            "entrefer_am": {
+                "attr_name": "EFamont",
+                "top_tour": "TopRotor1"
+            },
+            "entrefer_md": {
+                "attr_name": "EFmédian",
+                "top_tour": "TopRotor1"
+            },
+            "entrefer_av": {
+                "attr_name": "EFaval",
+                "top_tour": "TopRotor2"
+            },
+            "rotor_center": {
+                "Xattr_name": "X",
+                "Yattr_name": "Y",
+                "top_tour": "TopStator"
+            }
+        }  
+    }
+}
