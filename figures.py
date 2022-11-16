@@ -64,6 +64,21 @@ def correct_profile(df_synced, ef_name):
     )
     return alpha, e
 
+def compute_ec(df_synced, ef_name):
+    d2 = infos['rotor_diameter']/2
+    ec = []
+    for index, row in df_synced.iterrows():
+        min_d = np.inf
+        #position of S
+        r1, t1 = d2+row[f'e_{ef_name}'], row[f'a_{ef_name}']
+        for index2, row2 in df_synced.iterrows():
+            #position of O_r
+            r2, t2 = row2['RotorCenter_mean'], row2['RotorTheta_mean']
+            d = np.sqrt(r1**2+r2**2-2*r1*r2*np.cos(t2-t1))-d2
+            if d<min_d: min_d=d
+        ec.append(min_d)
+    return ec
+
 names={
     'EFamont_mean': 'am',
     'EFmédian_mean': 'me',
@@ -71,6 +86,7 @@ names={
 }
 for ef_name in names.keys():
     df_synced['a_'+names[ef_name]], df_synced['e_'+names[ef_name]] = correct_profile(df_synced, ef_name)
+    df_synced['ec_'+names[ef_name]] = compute_ec(df_synced, names[ef_name])
 
 # %%
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
@@ -117,10 +133,11 @@ ax.text(
 ax.text(
     -0.1, 1.1*max_r, '$\\theta$ (°)', color='black', zorder=1000, weight="bold"
 )
+plt.savefig(f'./rotorcenter.svg', bbox_inches='tight') 
 # %%
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 beta, l = np.array(df_synced['angles_centers']), np.array(df_synced['EFmédian_mean'])
-alpha, e = np.array(df_synced['a_me']), np.array(df_synced['e_me'])
+alpha, e, ec = np.array(df_synced['a_me']), np.array(df_synced['e_me']), np.array(df_synced['ec_me'])
 min_r, max_r = l-2*np.array(df_synced['EFmédian_std']), l+2*np.array(df_synced['EFmédian_std'])
 # uncorrected
 ax.scatter(
@@ -137,7 +154,7 @@ ax.plot(
 # corrected
 ax.scatter(
     alpha, e,
-    color='red', alpha=1, s=25, zorder=99
+    color='green', alpha=1, s=25, zorder=99
 )
 ax.scatter(
     alpha, e,
@@ -146,79 +163,56 @@ ax.scatter(
 ax.plot(
     np.append(alpha, alpha[0]),
     np.append(e, e[0]),
+    color='green',
+    lw=1,
+    zorder=97
+)
+# with eccentricity
+ax.scatter(
+    alpha, ec,
+    color='red', alpha=1, s=25, zorder=99
+)
+ax.scatter(
+    alpha, ec,
+    color='white', alpha=1, s=60, zorder=98
+)
+ax.plot(
+    np.append(alpha, alpha[0]),
+    np.append(ec, ec[0]),
     color='red',
     lw=1,
     zorder=97
 )
-# plt.fill_between(
-#     np.append(beta, beta[0]),
-#     np.append(min_r, min_r[0]),
-#     np.append(max_r, max_r[0]),
-#     color = (0,0,0,0.4),
-#     zorder=-30
-# )
-ax.set_rticks([4, 5, 6, 7, 8])
+plt.fill_between(
+    np.append(beta, beta[0]),
+    np.append(min_r, min_r[0]),
+    np.append(max_r, max_r[0]),
+    color = (0,0,0,0.4),
+    zorder=11.5
+)
+ax.set_rticks([4, 5, 6, 7])
+ax.set_yticklabels(['$4mm$', '$5mm$', '$6mm$', '$7mm$'])
 ax.set_rlabel_position(135)
 ax.set_rlim([4,8])
 ax.text(
-    2.7, 0.75*8, '$l$ ($mm$)', color='black', zorder=1000, weight="bold"
+    2.8, 0.65*8, '$l(\\beta)$', color='black', zorder=1000, weight="bold"
 )
 ax.text(
-    -0.1, 1.1*7.5, '$\\beta$ (°)', color='black', zorder=1000, weight="bold"
+    2.75, 0.75*8, '$e(\\alpha)$', color='green', zorder=1000, weight="bold"
 )
-# %%
-e_am, e_me, e_av = np.array(df_synced['e_am']), np.array(df_synced['e_me']), np.array(df_synced['e_av'])
-a_am, a_me, a_av = np.array(df_synced['a_am']), np.array(df_synced['a_me']), np.array(df_synced['a_av'])
-Xam, Yam = e_am*np.cos(a_am), e_am*np.sin(a_am)
-Xme, Yme = e_me*np.cos(a_me), e_me*np.sin(a_me)
-Xav, Yav = e_av*np.cos(a_av), e_av*np.sin(a_av)
-
-X,Y,Z,C=[],[],[],[]
-depths = [1,2,3]
-for i in list(range(len(Xam)))+[0]:
-    X.append([1,2,3])
-    Y.append([Xam[i],Xme[i],Xav[i]])
-    Z.append([Yam[i],Yme[i],Yav[i]])
-    C.append([e_am[i],e_me[i],e_av[i]])
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-scamap = plt.cm.ScalarMappable(cmap='inferno')
-scamap.set_clim(5,8)
-fcolors = scamap.to_rgba(np.array(C))
-ax.plot_wireframe(
-    np.array(X),
-    np.array(Y),
-    np.array(Z),
-    # facecolors=fcolors,
-    # rstride=5, cstride=5,
-    # color=(0,0,0,0.3),
-    color='black',
-    linewidth=1,
-    antialiased=True,
-    zorder=100
+ax.text(
+    2.7, 0.85*8, '$e_c(\\alpha)$', color='red', zorder=1000, weight="bold"
 )
-# C = np.linspace(1, 5, np.array(Z).size).reshape(np.array(Z).shape)
-
-ax.plot_surface(
-    np.array(X),
-    np.array(Y),
-    np.array(Z),
-    # facecolors=fcolors,
-    # rstride=20, cstride=5,
-    # cstride=10,
-    color=(0,0,0,0.3),
-    # color='black',
-    # linewidth=30,
-    antialiased=True,
-    shade=False
+ax.text(
+    -0.15, 1.1*7.5, '$\\beta$', color='black', zorder=1000, weight="bold"
 )
-ax.set_xticks([1,2,3])
-ax.set_xticks([1,2,3])
-ax.set_xticklabels(['upstream', 'median', 'downstream'])
-ax.set_xlabel('sensor position', fontsize=10, rotation = 0)
-ax.set_ylabel('y', fontsize=10, rotation = 0)
-ax.set_zlabel('z', fontsize=10, rotation = 0)
-
-# %%
+ax.text(
+    -0.25, 1.1*7.5, '$\\alpha$', color='green', zorder=1000, weight="bold"
+)
+ax.text(
+    -0.35, 1.1*7.5, '$\\alpha$', color='red', zorder=1000, weight="bold"
+)
+plt.savefig(f'./2dprofile.svg', bbox_inches='tight') 
 # %%
 from mpl_toolkits.mplot3d import Axes3D
 e_am, e_me, e_av = np.array(df_synced['e_am']), np.array(df_synced['e_me']), np.array(df_synced['e_av'])
@@ -282,15 +276,15 @@ ax.text(
     min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]+0.3,'min air gap',color='r',zorder=100000
 )
 ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,'e='+'{:.2f}'.format(min_e)+'mm',color='r',zorder=100000
+    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,'e='+'{:.2f}'.format(min_e),color='r',zorder=100000
 )
-ax.text(1, 0, 9, '$e(\\alpha)$')
+ax.text(1.4, 0, 9.5, '$e(\\alpha)$ (mm)')
 ax.set_xticks([1,2,3])
 ax.set_xticklabels(['upstream', 'median', 'downstream'])
 ax.set_yticks([0,2*np.pi/4,np.pi,6*np.pi/4,2*np.pi])
 ax.set_yticklabels(['0°', '90°', '180°', '270°', '360°'])
 ax.set_xlabel('sensor position', fontsize=10, rotation = 0)
-ax.set_ylabel('$\\alpha$', fontsize=10, rotation = 0)
+ax.set_ylabel('$\\alpha$ (°)', fontsize=10, rotation = 0)
 # plt.subplots_adjust(left=0.1, right=0.9)
 # ax.set_zlabel('$e(\\alpha)$', fontsize=10, labelpad=-2)
 ax.view_init(elev=10, azim=140)
@@ -298,4 +292,5 @@ ax.view_init(elev=10, azim=140)
 # ax.dist= 12
 
 # plt.tight_layout()
-plt.savefig(f'./3d.svg', bbox_inches='tight') 
+plt.savefig(f'./3dviz.svg', bbox_inches='tight') 
+# %%

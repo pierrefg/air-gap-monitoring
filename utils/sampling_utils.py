@@ -78,13 +78,13 @@ def compute_synchronized_df(infos):
         )
         groups = signal_with_angle.groupby('cats')
         df_synced[f'{attr_name}_mean'] = groups.mean()['signal']
-        df_synced[f'{attr_name}_max'] = groups.max()['signal']
-        df_synced[f'{attr_name}_min'] = groups.min()['signal']
+        # df_synced[f'{attr_name}_max'] = groups.max()['signal']
+        # df_synced[f'{attr_name}_min'] = groups.min()['signal']
         df_synced[f'{attr_name}_std'] = groups.std()['signal']
         if attr_name=='RotorCenter':
             df_synced[f'RotorTheta_mean'] = groups.mean()['theta']
-            df_synced[f'RotorTheta_max'] = groups.max()['theta']
-            df_synced[f'RotorTheta_min'] = groups.min()['theta']
+            # df_synced[f'RotorTheta_max'] = groups.max()['theta']
+            # df_synced[f'RotorTheta_min'] = groups.min()['theta']
             df_synced[f'RotorTheta_std'] = groups.std()['theta']
     df_synced['angles_centers'] = df_synced.index.categories.mid
     infos['data']['df_synced'] = df_synced
