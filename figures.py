@@ -133,7 +133,7 @@ ax.text(
 ax.text(
     -0.1, 1.1*max_r, '$\\theta$ (°)', color='black', zorder=1000, weight="bold"
 )
-plt.savefig(f'./rotorcenter.svg', bbox_inches='tight') 
+plt.savefig(f'./rotor_center.svg', bbox_inches='tight') 
 # %%
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 beta, l = np.array(df_synced['angles_centers']), np.array(df_synced['EFmédian_mean'])
