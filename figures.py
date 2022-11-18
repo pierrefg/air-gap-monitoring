@@ -16,7 +16,10 @@ import matplotlib.pyplot as plt
 
 plt.rcParams['font.family'] = 'serif'
 
-from scipy import signal
+lColor = '#2F3DEB'
+eColor = '#3A9F09'
+ecColor = '#EB5F23'
+
 # %%
 data = json.load(open('./data/infos.json'))['avg4']
 infos = data_utils.generate_infos(
@@ -120,7 +123,7 @@ ax.scatter(
     r,
     color='white',
     alpha=1,
-    s=60,
+    s=70,
     zorder=11
 )
 
@@ -129,6 +132,9 @@ ax.set_rticks([50, 100, 150, 200, 250])
 ax.set_rlabel_position(135)
 ax.text(
     2.7, 0.75*max_r, '$r$ ($\mu m$)', color='black', zorder=1000, weight="bold"
+)
+ax.text(
+   0.3, 10, '$O_s$', color='black', zorder=1000, weight="bold"
 )
 ax.text(
     -0.1, 1.1*max_r, '$\\theta$ (°)', color='black', zorder=1000, weight="bold"
@@ -142,19 +148,19 @@ min_r, max_r = l-2*np.array(df_synced['EFmédian_std']), l+2*np.array(df_synced[
 # uncorrected
 ax.scatter(
     beta, l,
-    color='black', alpha=1, s=25, zorder=12
+    color=lColor, alpha=1, s=25, zorder=12
 )
 ax.scatter(
     beta, l,
     color='white', alpha=1, s=60, zorder=11
 )
 ax.plot(
-    np.append(beta, beta[0]), np.append(l, l[0]), color='black', lw=1, zorder=10
+    np.append(beta, beta[0]), np.append(l, l[0]), color=lColor, lw=1, zorder=10
 )
 # corrected
 ax.scatter(
     alpha, e,
-    color='green', alpha=1, s=25, zorder=99
+    color=eColor, alpha=1, s=25, zorder=99
 )
 ax.scatter(
     alpha, e,
@@ -163,14 +169,14 @@ ax.scatter(
 ax.plot(
     np.append(alpha, alpha[0]),
     np.append(e, e[0]),
-    color='green',
+    color=eColor,
     lw=1,
     zorder=97
 )
 # with eccentricity
 ax.scatter(
     alpha, ec,
-    color='red', alpha=1, s=25, zorder=99
+    color=ecColor, alpha=1, s=25, zorder=99
 )
 ax.scatter(
     alpha, ec,
@@ -179,7 +185,7 @@ ax.scatter(
 ax.plot(
     np.append(alpha, alpha[0]),
     np.append(ec, ec[0]),
-    color='red',
+    color=ecColor,
     lw=1,
     zorder=97
 )
@@ -187,30 +193,31 @@ plt.fill_between(
     np.append(beta, beta[0]),
     np.append(min_r, min_r[0]),
     np.append(max_r, max_r[0]),
-    color = (0,0,0,0.4),
-    zorder=11.5
+    color = lColor,
+    alpha=0.5,
+    zorder=0
 )
 ax.set_rticks([4, 5, 6, 7])
 ax.set_yticklabels(['$4mm$', '$5mm$', '$6mm$', '$7mm$'])
 ax.set_rlabel_position(135)
 ax.set_rlim([4,8])
 ax.text(
-    2.8, 0.65*8, '$l(\\beta)$', color='black', zorder=1000, weight="bold"
+    2.8, 0.65*8, '$l[\\beta]$', color=lColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.75, 0.75*8, '$e(\\alpha)$', color='green', zorder=1000, weight="bold"
+    2.75, 0.75*8, '$e[\\alpha]$', color=eColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.7, 0.85*8, '$e_c(\\alpha)$', color='red', zorder=1000, weight="bold"
+    2.7, 0.85*8, '$e_c[\\alpha]$', color=ecColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.15, 1.1*7.5, '$\\beta$', color='black', zorder=1000, weight="bold"
+    -0.15, 1.1*7.5, '$\\beta$', color=lColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.25, 1.1*7.5, '$\\alpha$', color='green', zorder=1000, weight="bold"
+    -0.25, 1.1*7.5, '$\\alpha$', color=eColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.35, 1.1*7.5, '$\\alpha$', color='red', zorder=1000, weight="bold"
+    -0.35, 1.1*7.5, '$\\alpha$', color=ecColor, zorder=1000, weight="bold"
 )
 plt.savefig(f'./2dprofile.svg', bbox_inches='tight') 
 # %%
@@ -278,7 +285,7 @@ ax.text(
 ax.text(
     min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,'e='+'{:.2f}'.format(min_e),color='r',zorder=100000
 )
-ax.text(1.4, 0, 9.5, '$e(\\alpha)$ (mm)')
+ax.text(1.4, 0, 9.5, '$e[\\alpha]$ (mm)')
 ax.set_xticks([1,2,3])
 ax.set_xticklabels(['upstream', 'median', 'downstream'])
 ax.set_yticks([0,2*np.pi/4,np.pi,6*np.pi/4,2*np.pi])
