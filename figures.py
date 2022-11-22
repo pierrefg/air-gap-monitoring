@@ -16,9 +16,14 @@ import matplotlib.pyplot as plt
 
 plt.rcParams['font.family'] = 'serif'
 
-lColor = '#2F3DEB'
-eColor = '#3A9F09'
-ecColor = '#EB5F23'
+mColor = '#2F3DEB'
+aColor = '#3A9F09'
+cColor = '#EB5F23'
+mName = '\delta_m'
+aName = '\delta_a'
+cName = '\delta_c'
+rcrName = 'e'
+rcaName = '\\theta'
 
 # %%
 data = json.load(open('./data/infos.json'))['avg4']
@@ -131,7 +136,7 @@ max_r = np.max(r)
 ax.set_rticks([50, 100, 150, 200, 250])
 ax.set_rlabel_position(135)
 ax.text(
-    2.7, 0.75*max_r, '$r$ ($\mu m$)', color='black', zorder=1000, weight="bold"
+    2.7, 0.75*max_r, f'${rcrName}$ ($\mu m$)', color='black', zorder=1000, weight="bold"
 )
 ax.text(
    0.3, 10, '$O_s$', color='black', zorder=1000, weight="bold"
@@ -148,19 +153,19 @@ min_r, max_r = l-2*np.array(df_synced['EFmédian_std']), l+2*np.array(df_synced[
 # uncorrected
 ax.scatter(
     beta, l,
-    color=lColor, alpha=1, s=25, zorder=12
+    color=mColor, alpha=1, s=25, zorder=12
 )
 ax.scatter(
     beta, l,
     color='white', alpha=1, s=60, zorder=11
 )
 ax.plot(
-    np.append(beta, beta[0]), np.append(l, l[0]), color=lColor, lw=1, zorder=10
+    np.append(beta, beta[0]), np.append(l, l[0]), color=mColor, lw=1, zorder=10
 )
 # corrected
 ax.scatter(
     alpha, e,
-    color=eColor, alpha=1, s=25, zorder=99
+    color=aColor, alpha=1, s=25, zorder=99
 )
 ax.scatter(
     alpha, e,
@@ -169,14 +174,14 @@ ax.scatter(
 ax.plot(
     np.append(alpha, alpha[0]),
     np.append(e, e[0]),
-    color=eColor,
+    color=aColor,
     lw=1,
     zorder=97
 )
 # with eccentricity
 ax.scatter(
     alpha, ec,
-    color=ecColor, alpha=1, s=25, zorder=99
+    color=cColor, alpha=1, s=25, zorder=99
 )
 ax.scatter(
     alpha, ec,
@@ -185,7 +190,7 @@ ax.scatter(
 ax.plot(
     np.append(alpha, alpha[0]),
     np.append(ec, ec[0]),
-    color=ecColor,
+    color=cColor,
     lw=1,
     zorder=97
 )
@@ -193,7 +198,7 @@ plt.fill_between(
     np.append(beta, beta[0]),
     np.append(min_r, min_r[0]),
     np.append(max_r, max_r[0]),
-    color = lColor,
+    color = mColor,
     alpha=0.5,
     zorder=0
 )
@@ -202,22 +207,25 @@ ax.set_yticklabels(['$4mm$', '$5mm$', '$6mm$', '$7mm$'])
 ax.set_rlabel_position(135)
 ax.set_rlim([4,8])
 ax.text(
-    2.8, 0.65*8, '$l[\\beta]$', color=lColor, zorder=1000, weight="bold"
+    2.7, 0.85*8, f'${mName}[\\beta]$', color=mColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.75, 0.75*8, '$e[\\alpha]$', color=eColor, zorder=1000, weight="bold"
+    2.75, 0.75*8, f'${aName}[\\alpha]$', color=aColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.7, 0.85*8, '$e_c[\\alpha]$', color=ecColor, zorder=1000, weight="bold"
+    2.83, 0.65*8, f'${cName}[\\alpha]$', color=cColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.15, 1.1*7.5, '$\\beta$', color=lColor, zorder=1000, weight="bold"
+    -0.15, 1.1*7.5, '$\\beta$', color=mColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.25, 1.1*7.5, '$\\alpha$', color=eColor, zorder=1000, weight="bold"
+    -0.25, 1.1*7.5, '$\\alpha$', color=aColor, zorder=1000, weight="bold"
 )
 ax.text(
-    -0.35, 1.1*7.5, '$\\alpha$', color=ecColor, zorder=1000, weight="bold"
+    -0.35, 1.1*7.5, '$\\alpha$', color=cColor, zorder=1000, weight="bold"
+)
+ax.text(
+   np.pi+0.6, 4.5, '$O_s$', color='black', zorder=1000, weight="bold"
 )
 plt.savefig(f'./2dprofile.svg', bbox_inches='tight') 
 # %%
@@ -251,7 +259,7 @@ ax.plot_wireframe(
     np.array(X),
     np.array(Y),
     np.array(Z),
-    # facecolors=fcolors,
+    # facaColors=fcolors,
     # rstride=5, cstride=5,
     # color=(0,0,0,0.3),
     color='black',
@@ -266,7 +274,7 @@ ax.plot_surface(
     np.array(Y),
     np.array(Z),
     cmap=matplotlib.cm.jet_r,
-    # facecolors=fcolors,
+    # facaColors=fcolors,
     # rstride=20, cstride=5,
     # cstride=10,
     # color=(0,0,0,0.3),
@@ -283,9 +291,9 @@ ax.text(
     min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]+0.3,'min air gap',color='r',zorder=100000
 )
 ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,'e='+'{:.2f}'.format(min_e),color='r',zorder=100000
+    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,f'${aName}='+'{:.2f}$'.format(min_e),color='r',zorder=100000
 )
-ax.text(1.4, 0, 9.5, '$e[\\alpha]$ (mm)')
+ax.text(1.4, 0, 9.5, f'${aName}[\\alpha]$ (mm)')
 ax.set_xticks([1,2,3])
 ax.set_xticklabels(['upstream', 'median', 'downstream'])
 ax.set_yticks([0,2*np.pi/4,np.pi,6*np.pi/4,2*np.pi])
