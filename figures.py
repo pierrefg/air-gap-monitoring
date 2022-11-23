@@ -11,6 +11,8 @@ import utils.polar_utils as polar_utils
 import utils.tops_utils as tops_utils
 import utils.sampling_utils as sampling_utils
 
+from scipy import stats
+
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -99,6 +101,28 @@ for ef_name in names.keys():
 # %%
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 theta, r = np.array(df_synced['RotorTheta_mean']), np.array(df_synced['RotorCenter_mean']*1000)
+mean_theta, mean_r = stats.circmean(theta), r.mean()
+r_max_index = r.argmax()
+ax.scatter(
+    [mean_theta],
+    [mean_r],
+    color='black',
+    alpha=1,
+    s=50,
+    zorder=12,
+    marker="x"
+)
+ax.scatter(
+    [theta[r_max_index]],
+    [r[r_max_index]],
+    color='red',
+    alpha=1,
+    s=50,
+    zorder=5000,
+    marker="x"
+)
+ax.text(theta[r_max_index], r[r_max_index]+20, 'max eccentricity\n$e='+'{:.0f}\mu m$'.format(r[r_max_index]), ha='left', color='red')
+ax.text(mean_theta+0.1, mean_r-25, 'Mean rotor\nposition', ha='center')
 ax.plot(
     np.append(theta, theta[0]),
     np.append(r, r[0]),
@@ -210,10 +234,10 @@ ax.text(
     2.7, 0.85*8, f'${mName}[\\beta]$', color=mColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.75, 0.75*8, f'${aName}[\\alpha]$', color=aColor, zorder=1000, weight="bold"
+    2.8, 0.74*8, f'${aName}[\\alpha]$', color=aColor, zorder=1000, weight="bold"
 )
 ax.text(
-    2.83, 0.65*8, f'${cName}[\\alpha]$', color=cColor, zorder=1000, weight="bold"
+    2.96, 0.65*8, f'${cName}[\\alpha]$', color=cColor, zorder=1000, weight="bold"
 )
 ax.text(
     -0.15, 1.1*7.5, '$\\beta$', color=mColor, zorder=1000, weight="bold"
@@ -288,10 +312,7 @@ ax.scatter(
     min_e_coord[0],min_e_coord[1],min_e_coord[2],color='r',zorder=100000
 )
 ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]+0.3,'min air gap',color='r',zorder=100000
-)
-ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2]-0.1,f'${aName}='+'{:.2f}$'.format(min_e),color='r',zorder=100000
+    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2],f'min air gap\n${aName}='+'{:.2f}'.format(min_e)+'mm$',color='r',zorder=100000
 )
 ax.text(1.4, 0, 9.5, f'${aName}[\\alpha]$ (mm)')
 ax.set_xticks([1,2,3])
