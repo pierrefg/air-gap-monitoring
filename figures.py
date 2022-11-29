@@ -10,6 +10,7 @@ import utils.scatter_utils as scatter_utils
 import utils.polar_utils as polar_utils
 import utils.tops_utils as tops_utils
 import utils.sampling_utils as sampling_utils
+from scipy import interpolate
 
 from scipy import stats
 
@@ -21,7 +22,7 @@ plt.rcParams['font.family'] = 'serif'
 mColor = '#2F3DEB'
 aColor = '#3A9F09'
 cColor = '#EB5F23'
-mName = '\delta_m'
+mName = '\overline{\delta_m}'
 aName = '\delta_a'
 cName = '\delta_c'
 rcrName = 'e'
@@ -329,4 +330,78 @@ ax.view_init(elev=10, azim=140)
 
 # plt.tight_layout()
 plt.savefig(f'./3dviz.svg', bbox_inches='tight') 
+# %%
+swa = infos['attrs']['EFmédian']['signal_with_angle'].copy()
+angle, signal = swa['rotor_angle'], swa['signal']
+f = interpolate.interp1d(angle, signal, kind='linear', assume_sorted=False)
+angle_min, angle_max = angle.min(), angle.max()
+max_angle = 360
+wanted_angles = np.linspace(0,max_angle,int(max_angle/(max_angle/32)),endpoint=True)
+r = np.empty((0, len(wanted_angles)))
+continuous_mean = np.empty((0, len(wanted_angles)))
+steps = range(2, int(angle_max/max_angle)-2)
+for i in steps:
+    r = np.append(r, np.array([f(wanted_angles+i*max_angle)]), axis=0)
+    continuous_mean = np.append(continuous_mean, np.array([r.mean(axis=0)]), axis=0)
+
+fig, ax = plt.subplots()
+legend='Raw $\delta_m$'
+ax.plot(
+    [],
+    [],
+    color='black',
+    alpha=0.3,
+    label=legend,
+    zorder=999
+)
+for spin in r:
+    ax.plot(
+        wanted_angles,
+        spin,
+        color='black',
+        alpha=0.05,
+        # label=legend,
+        zorder=999
+    )
+    legend=None
+ax.plot(
+    wanted_angles,
+    r.mean(axis=0),
+    'o-',
+    color=mColor,
+    alpha=1,
+    # label=legend
+    zorder=1000,
+    label='Averaged $\overline{\delta_m}$',
+    # linestyle='o-'
+    ms=5
+)
+ax.scatter(
+    wanted_angles,
+    r.mean(axis=0),
+    color=mColor,
+    alpha=1,
+    # label=legend
+    zorder=1005,
+    s=20
+)
+# ax.scatter(
+#     wanted_angles,
+#     r.mean(axis=0),
+#     color='white',
+#     alpha=0.5,
+#     # label=legend
+#     zorder=1001,
+#     s=60
+# )
+ax.legend(loc="upper right")
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['bottom'].set_bounds(min(wanted_angles), max(wanted_angles))
+ax.spines['left'].set_bounds(min(signal), max(signal))
+ax.set(xlabel='$\\beta$ $(°)$')
+ax.set(ylabel=f'Measured air gap $(mm)$')
+fig.set_size_inches(8, 6, forward=True)
+plt.savefig(f'./synchronous_avg.svg', bbox_inches='tight') 
+
 # %%
