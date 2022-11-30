@@ -345,7 +345,7 @@ for i in steps:
     continuous_mean = np.append(continuous_mean, np.array([r.mean(axis=0)]), axis=0)
 
 fig, ax = plt.subplots()
-legend='Raw $\delta_m$'
+legend='Raw $\delta_m$ ($\\times50$ revolutions)'
 ax.plot(
     [],
     [],
@@ -359,7 +359,7 @@ for spin in r:
         wanted_angles,
         spin,
         color='black',
-        alpha=0.05,
+        alpha=0.08,
         # label=legend,
         zorder=999
     )
@@ -394,14 +394,89 @@ ax.scatter(
 #     zorder=1001,
 #     s=60
 # )
-ax.legend(loc="upper right")
+# ax.legend(loc="upper right")
+ax.legend(loc=(0.1, 0.1))
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.spines['bottom'].set_bounds(min(wanted_angles), max(wanted_angles))
 ax.spines['left'].set_bounds(min(signal), max(signal))
 ax.set(xlabel='$\\beta$ $(°)$')
 ax.set(ylabel=f'Measured air gap $(mm)$')
-fig.set_size_inches(8, 6, forward=True)
+fig.set_size_inches(5.5, 3.5, forward=True)
 plt.savefig(f'./synchronous_avg.svg', bbox_inches='tight') 
+
+# %%
+csv_path = './data/F.csv'
+lb, ub = 1272, 1300
+hfr = pd.read_csv(csv_path, comment='#', index_col='TIME', parse_dates=True)
+hfr = hfr[lb:ub:2]
+keyphasor = hfr['TOP_ROTOR']
+keyphasor.plot()
+timeo, signal = keyphasor.index.to_numpy(), keyphasor.to_numpy()
+T = 1/1000
+time = (0.145+np.arange(0,len(hfr.index)*T,T))*1000
+fig, ax = plt.subplots()
+ax.plot(
+    time,
+    signal,
+    color='black',
+    alpha=1,
+    label=legend,
+    zorder=8,
+    linewidth=1
+)
+ax.scatter(
+    time,
+    signal,
+    color='black',
+    alpha=1,
+    # label=legend
+    zorder=10,
+    s=20
+)
+ax.scatter(
+    time,
+    signal,
+    color='white',
+    alpha=1,
+    # label=legend
+    zorder=9,
+    s=60
+)
+i=3
+ax.plot(
+    [time[i], time[i+1]], 
+    [signal[i], signal[i+1]], 
+    linestyle='-', color='red', zorder=8.5
+)
+ax.plot(
+    [time[0], time[-1]], 
+    [1.5, 1.5], 
+    linestyle='--', color='red'
+)
+ax.text(
+    (time[i]+time[i+1])/2-2.6, 
+    2.5, 
+    'rising edge',
+    color='red',
+    va='center'
+)
+ax.text(
+    max(time), 
+    1.5+0.1, 
+    'thresold',
+    color='red',
+    ha='right'
+)
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_bounds(min(signal), max(signal))
+ax.spines['bottom'].set_bounds(min(time), max(time))
+ax.set_yticks([1, 2, 3])
+ax.set_xticks([147, 150, 153, 156])
+fig.set_size_inches(5.5, 3.5, forward=True)
+ax.set(xlabel='time $t$ $(ms)$')
+ax.set(ylabel=f'keyphasor $k$ $(V)$')
+plt.savefig(f'./rising_edge.svg', bbox_inches='tight') 
 
 # %%
