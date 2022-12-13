@@ -28,7 +28,7 @@ cName = '\delta_c'
 rcrName = 'e'
 rcaName = '\\theta'
 
-figures_root = './figures/'
+figures_root = './figures_fr/'
 
 # %%
 data = json.load(open('./data/infos.json'))['avg4']
@@ -124,8 +124,8 @@ ax.scatter(
     zorder=5000,
     marker="x"
 )
-ax.text(theta[r_max_index], r[r_max_index]+20, 'max eccentricity\n$e='+'{:.0f}\mu m$'.format(r[r_max_index]), ha='left', color='red')
-ax.text(mean_theta+0.1, mean_r-25, 'Mean rotor\nposition', ha='center')
+ax.text(theta[r_max_index], r[r_max_index]+20, 'excentricité max\n$e='+'{:.0f}\mu m$'.format(r[r_max_index]), ha='left', color='red')
+ax.text(mean_theta+0.1, mean_r-25, 'position rotor\nmoyenne', ha='center')
 ax.plot(
     np.append(theta, theta[0]),
     np.append(r, r[0]),
@@ -315,14 +315,14 @@ ax.scatter(
     min_e_coord[0],min_e_coord[1],min_e_coord[2],color='r',zorder=100000
 )
 ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2],f'min air gap\n${aName}='+'{:.2f}'.format(min_e)+'mm$',color='r',zorder=100000
+    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2],f'entrefer min\n${aName}='+'{:.2f}'.format(min_e)+'mm$',color='r',zorder=100000
 )
 ax.text(1.4, 0, 9.5, f'${aName}[\\alpha]$ (mm)')
 ax.set_xticks([1,2,3])
-ax.set_xticklabels(['upstream', 'median', 'downstream'])
+ax.set_xticklabels(['amont', 'médian', 'aval'])
 ax.set_yticks([0,2*np.pi/4,np.pi,6*np.pi/4,2*np.pi])
 ax.set_yticklabels(['0°', '90°', '180°', '270°', '360°'])
-ax.set_xlabel('sensor position', fontsize=10, rotation = 0)
+ax.set_xlabel('position capteur', fontsize=10, rotation = 0)
 ax.set_ylabel('$\\alpha$ (°)', fontsize=10, rotation = 0)
 ax.view_init(elev=10, azim=140)
 
@@ -342,7 +342,7 @@ for i in steps:
     continuous_mean = np.append(continuous_mean, np.array([r.mean(axis=0)]), axis=0)
 
 fig, ax = plt.subplots()
-legend='Raw $\delta_m$ ($\\times50$ revolutions)'
+legend='Brut $\delta_m$ ($\\times50$ révolutions)'
 ax.plot(
     [],
     [],
@@ -357,7 +357,6 @@ for spin in r:
         spin,
         color='black',
         alpha=0.08,
-        # label=legend,
         zorder=999
     )
     legend=None
@@ -367,10 +366,8 @@ ax.plot(
     'o-',
     color=mColor,
     alpha=1,
-    # label=legend
     zorder=1000,
-    label='Averaged $\overline{\delta_m}$',
-    # linestyle='o-'
+    label='Moyenné $\overline{\delta_m}$',
     ms=5
 )
 ax.scatter(
@@ -378,27 +375,16 @@ ax.scatter(
     r.mean(axis=0),
     color=mColor,
     alpha=1,
-    # label=legend
     zorder=1005,
     s=20
 )
-# ax.scatter(
-#     wanted_angles,
-#     r.mean(axis=0),
-#     color='white',
-#     alpha=0.5,
-#     # label=legend
-#     zorder=1001,
-#     s=60
-# )
-# ax.legend(loc="upper right")
 ax.legend(loc=(0.1, 0.1))
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.spines['bottom'].set_bounds(min(wanted_angles), max(wanted_angles))
 ax.spines['left'].set_bounds(min(signal), max(signal))
 ax.set(xlabel='$\\beta$ $(°)$')
-ax.set(ylabel=f'Measured air gap $(mm)$')
+ax.set(ylabel=f'Entrefer mesuré $(mm)$')
 fig.set_size_inches(5.5, 3.5, forward=True)
 plt.savefig(figures_root+'synchronous_avg.svg', bbox_inches='tight') 
 
@@ -451,16 +437,16 @@ ax.plot(
     linestyle='--', color='red'
 )
 ax.text(
-    (time[i]+time[i+1])/2-2.6, 
+    (time[i]+time[i+1])/2-3.2, 
     2.5, 
-    'rising edge',
+    'front montant',
     color='red',
     va='center'
 )
 ax.text(
     max(time), 
     1.5+0.2, 
-    'thresold',
+    'seuil',
     color='red',
     ha='right'
 )
@@ -472,7 +458,7 @@ ax.set_yticks([1, 2, 3])
 ax.set_ylim([-0.1,3])
 ax.set_xticks([147, 150, 153, 156])
 fig.set_size_inches(5.5, 1.2, forward=True)
-ax.set(xlabel='time $t$ $(ms)$')
+ax.set(xlabel='temps $t$ $(ms)$')
 ax.set(ylabel=f'keyphasor $k$ $(V)$')
 plt.savefig(figures_root+'rising_edge.svg', bbox_inches='tight') 
 
