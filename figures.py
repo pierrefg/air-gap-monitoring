@@ -18,9 +18,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 plt.rcParams.update({
     'font.family': 'serif',
-    'font.size': 11,
+    'font.size': 13,
     'text.usetex': True,
-    'text.latex.preamble': r'\usepackage[libertine,cmintegrals,cmbraces,vvarbb]{newtxmath}'
+    'text.latex.preamble': r'\usepackage{libertine} \usepackage[libertine]{newtxmath}'
 })
 
 mColor = '#2F3DEB'
@@ -105,7 +105,7 @@ for ef_name in names.keys():
     df_synced['a_'+names[ef_name]], df_synced['e_'+names[ef_name]] = correct_profile(df_synced, ef_name)
     df_synced['ec_'+names[ef_name]] = compute_ec(df_synced, names[ef_name])
 
-# %%
+# %% ROTOR CENTER TRAJECTORY
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 theta, r = np.array(df_synced['RotorTheta_mean']), np.array(df_synced['RotorCenter_mean']*1000)
 mean_theta, mean_r = stats.circmean(theta), r.mean()
@@ -128,7 +128,7 @@ ax.scatter(
     zorder=5000,
     marker="x"
 )
-ax.text(theta[r_max_index], r[r_max_index]+20, 'max eccentricity\n$e='+'{:.0f}\mu m$'.format(r[r_max_index]), ha='left', color='red')
+ax.text(theta[r_max_index], r[r_max_index]+20, 'max eccentricity\n$e='+'{:.0f}$$\mu$m'.format(r[r_max_index]), ha='left', color='red')
 ax.text(mean_theta+0.1, mean_r-25, 'Mean rotor\nposition', ha='center')
 ax.plot(
     np.append(theta, theta[0]),
@@ -167,16 +167,16 @@ max_r = np.max(r)
 ax.set_rticks([50, 100, 150, 200, 250])
 ax.set_rlabel_position(135)
 ax.text(
-    2.7, 0.75*max_r, f'${rcrName}$ ($\mu m$)', color='black', zorder=1000, weight="bold"
+    2.7, 0.75*max_r, f'${rcrName}$ ($\mu$m)', color='black', zorder=1000, weight="bold"
 )
 ax.text(
    0.3, 10, '$O_s$', color='black', zorder=1000, weight="bold"
 )
 ax.text(
-    -0.1, 1.1*max_r, '$\\theta$ (°)', color='black', zorder=1000, weight="bold"
+    -0.15, 1.1*max_r, '$\\theta$ (°)', color='black', zorder=1000, weight="bold"
 )
 plt.savefig(figures_root+'rotor_center.svg', bbox_inches='tight') 
-# %%
+# %% 2D profile
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 beta, l = np.array(df_synced['angles_centers']), np.array(df_synced['EFmédian_mean'])
 alpha, e, ec = np.array(df_synced['a_me']), np.array(df_synced['e_me']), np.array(df_synced['ec_me'])
@@ -234,7 +234,7 @@ plt.fill_between(
     zorder=0
 )
 ax.set_rticks([4, 5, 6, 7])
-ax.set_yticklabels(['$4$mm', '$5$mm', '$6$mm', '$7$'mm])
+ax.set_yticklabels(['$4$mm', '$5$mm', '$6$mm', '$7$mm'])
 ax.set_rlabel_position(135)
 ax.set_rlim([4,8])
 ax.text(
@@ -259,7 +259,7 @@ ax.text(
    np.pi+0.6, 4.5, '$O_s$', color='black', zorder=1000, weight="bold"
 )
 plt.savefig(figures_root+'2dprofile.svg', bbox_inches='tight') 
-# %%
+# %% 3D DEFORMATION MAP
 from mpl_toolkits.mplot3d import Axes3D
 e_am, e_me, e_av = np.array(df_synced['e_am']), np.array(df_synced['e_me']), np.array(df_synced['e_av'])
 a_am, a_me, a_av = np.array(df_synced['a_am']), np.array(df_synced['a_me']), np.array(df_synced['a_av'])
@@ -319,17 +319,22 @@ ax.scatter(
     min_e_coord[0],min_e_coord[1],min_e_coord[2],color='r',zorder=100000
 )
 ax.text(
-    min_e_coord[0],min_e_coord[1]-0.4,min_e_coord[2],f'min air gap\n${aName}='+'{:.2f}'.format(min_e)+'mm$',color='r',zorder=100000
+    min_e_coord[0]-0.1,min_e_coord[1]-0.4,min_e_coord[2]+0.2,f'min air gap\n${aName}='+'{:.2f}'.format(min_e)+'$mm',color='r',zorder=100000
 )
 ax.text(1.4, 0, 9.5, f'${aName}[\\alpha]$ (mm)')
 ax.set_xticks([1,2,3])
 ax.set_xticklabels(['upstream', 'median', 'downstream'])
 ax.set_yticks([0,2*np.pi/4,np.pi,6*np.pi/4,2*np.pi])
 ax.set_yticklabels(['0°', '90°', '180°', '270°', '360°'])
-ax.set_xlabel('sensor position', fontsize=10, rotation = 0)
-ax.set_ylabel('$\\alpha$ (°)', fontsize=10, rotation = 0)
+ax.set_xlabel('sensor position',rotation = 0)
+ax.set_ylabel('$\\alpha$ (°)', rotation = 0)
 ax.view_init(elev=10, azim=140)
-
+ax.xaxis.pane.fill = False
+ax.yaxis.pane.fill = False
+ax.zaxis.pane.fill = False
+ax.xaxis.pane.set_edgecolor('w')
+ax.yaxis.pane.set_edgecolor('w')
+ax.zaxis.pane.set_edgecolor('w')
 plt.savefig(figures_root+'3dviz.svg', bbox_inches='tight') 
 # %%
 swa = infos['attrs']['EFmédian']['signal_with_angle'].copy()
@@ -403,7 +408,8 @@ ax.spines['bottom'].set_bounds(min(wanted_angles), max(wanted_angles))
 ax.spines['left'].set_bounds(min(signal), max(signal))
 ax.set(xlabel='$\\beta$ $(°)$')
 ax.set(ylabel=f'Measured air gap (mm)')
-fig.set_size_inches(5.5, 3.5, forward=True)
+# fig.set_size_inches(5.5, 3.5, forward=True)
+fig.set_size_inches(5.5, 3.5)
 plt.savefig(figures_root+'synchronous_avg.svg', bbox_inches='tight') 
 
 # %%
@@ -455,7 +461,7 @@ ax.plot(
     linestyle='--', color='red'
 )
 ax.text(
-    (time[i]+time[i+1])/2-2.6, 
+    (time[i]+time[i+1])/2-2.8, 
     2.5, 
     'rising edge',
     color='red',
@@ -475,7 +481,7 @@ ax.spines['bottom'].set_bounds(min(time), max(time))
 ax.set_yticks([1, 2, 3])
 ax.set_ylim([-0.1,3])
 ax.set_xticks([147, 150, 153, 156])
-fig.set_size_inches(5.5, 1.2, forward=True)
+fig.set_size_inches(5.5, 2, forward=True)
 ax.set(xlabel='time $t$ (ms)')
 ax.set(ylabel=f'keyphasor $k$ (V)')
 plt.savefig(figures_root+'rising_edge.svg', bbox_inches='tight') 
