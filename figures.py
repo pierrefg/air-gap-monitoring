@@ -16,8 +16,12 @@ from scipy import stats
 
 import matplotlib
 import matplotlib.pyplot as plt
-
-plt.rcParams['font.family'] = 'serif'
+plt.rcParams.update({
+    'font.family': 'serif',
+    'font.size': 11,
+    'text.usetex': True,
+    'text.latex.preamble': r'\usepackage[libertine,cmintegrals,cmbraces,vvarbb]{newtxmath}'
+})
 
 mColor = '#2F3DEB'
 aColor = '#3A9F09'
@@ -230,7 +234,7 @@ plt.fill_between(
     zorder=0
 )
 ax.set_rticks([4, 5, 6, 7])
-ax.set_yticklabels(['$4mm$', '$5mm$', '$6mm$', '$7mm$'])
+ax.set_yticklabels(['$4$mm', '$5$mm', '$6$mm', '$7$'mm])
 ax.set_rlabel_position(135)
 ax.set_rlim([4,8])
 ax.text(
@@ -398,7 +402,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['bottom'].set_bounds(min(wanted_angles), max(wanted_angles))
 ax.spines['left'].set_bounds(min(signal), max(signal))
 ax.set(xlabel='$\\beta$ $(°)$')
-ax.set(ylabel=f'Measured air gap $(mm)$')
+ax.set(ylabel=f'Measured air gap (mm)')
 fig.set_size_inches(5.5, 3.5, forward=True)
 plt.savefig(figures_root+'synchronous_avg.svg', bbox_inches='tight') 
 
@@ -472,8 +476,8 @@ ax.set_yticks([1, 2, 3])
 ax.set_ylim([-0.1,3])
 ax.set_xticks([147, 150, 153, 156])
 fig.set_size_inches(5.5, 1.2, forward=True)
-ax.set(xlabel='time $t$ $(ms)$')
-ax.set(ylabel=f'keyphasor $k$ $(V)$')
+ax.set(xlabel='time $t$ (ms)')
+ax.set(ylabel=f'keyphasor $k$ (V)')
 plt.savefig(figures_root+'rising_edge.svg', bbox_inches='tight') 
 
 # %%
